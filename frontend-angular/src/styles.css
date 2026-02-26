@@ -1,1 +1,98 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400;500;600;700;800&family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Montserrat', sans-serif;
+  background-color: #050505;
+  color: #FAFAFA;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Bodoni Moda', serif;
+}
+
+.gold-text {
+  color: #C6A87C;
+}
+
+.btn-primary {
+  background-color: #C6A87C;
+  color: #000000;
+  border: none;
+  padding: 16px 32px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #E5CFA0;
+}
+
+.btn-outline {
+  background-color: transparent;
+  color: #C6A87C;
+  border: 1px solid #C6A87C;
+  padding: 16px 32px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-outline:hover {
+  background-color: #C6A87C;
+  color: #000000;
+}
+
+input, textarea, select {
+  width: 100%;
+  padding: 12px;
+  background-color: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  color: #FAFAFA;
+  font-family: 'Montserrat', sans-serif;
+  transition: border-color 0.3s;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-bottom-color: #C6A87C;
+}
+
+input::placeholder, textarea::placeholder {
+  color: #666;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.section {
+  padding: 96px 24px;
+}
+
+.card {
+  background-color: #0a0a0a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 24px;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  border-color: #C6A87C;
+}
