@@ -1,0 +1,178 @@
+{
+  "design_system": {
+    "typography": {
+      "font_family": {
+        "heading": "Bodoni Moda, serif",
+        "body": "Montserrat, sans-serif",
+        "accent": "Playfair Display, serif"
+      },
+      "scale": {
+        "h1": "text-5xl md:text-7xl font-bold tracking-tight leading-none",
+        "h2": "text-4xl md:text-5xl font-semibold tracking-tight",
+        "h3": "text-2xl md:text-3xl font-medium tracking-wide",
+        "body": "text-base md:text-lg leading-relaxed tracking-normal",
+        "caption": "text-xs uppercase tracking-[0.2em] font-medium"
+      }
+    },
+    "colors": {
+      "theme": "dark",
+      "palette": {
+        "background": {
+          "default": "#050505",
+          "paper": "#0a0a0a",
+          "subtle": "#121212"
+        },
+        "primary": {
+          "main": "#C6A87C",
+          "light": "#E5CFA0",
+          "dark": "#8C734B",
+          "contrast": "#000000"
+        },
+        "secondary": {
+          "main": "#FAFAFA",
+          "muted": "#A1A1AA"
+        },
+        "border": {
+          "default": "rgba(255, 255, 255, 0.1)",
+          "active": "#C6A87C"
+        },
+        "status": {
+          "success": "#10B981",
+          "error": "#EF4444",
+          "warning": "#F59E0B"
+        }
+      },
+      "gradients": {
+        "gold_text": "bg-clip-text text-transparent bg-gradient-to-r from-[#C6A87C] via-[#E5CFA0] to-[#C6A87C]",
+        "gold_border": "bg-gradient-to-r from-[#C6A87C] to-[#8C734B]",
+        "dark_overlay": "bg-gradient-to-t from-black via-black/80 to-transparent"
+      }
+    },
+    "visual_enhancers": {
+      "shadows": {
+        "card": "0 10px 30px -10px rgba(0, 0, 0, 0.5)",
+        "glow": "0 0 20px rgba(198, 168, 124, 0.3)"
+      },
+      "radius": {
+        "default": "0px",
+        "button": "0px",
+        "input": "0px"
+      },
+      "borders": {
+        "thin": "1px solid rgba(255,255,255,0.1)",
+        "gold": "1px solid #C6A87C"
+      },
+      "glassmorphism": {
+        "header": "backdrop-blur-md bg-black/70 border-b border-white/5"
+      }
+    }
+  },
+  "layout_strategies": {
+    "grid_system": {
+      "bento_grid": "grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6",
+      "product_grid": "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-16",
+      "hero_section": "h-screen w-full flex items-center justify-center relative overflow-hidden"
+    },
+    "spacing": {
+      "section_padding": "py-24 px-6 md:px-12 lg:px-24",
+      "element_gap": "space-y-8"
+    },
+    "containers": {
+      "max_width": "max-w-7xl mx-auto"
+    }
+  },
+  "components": {
+    "Button": {
+      "base": "inline-flex items-center justify-center text-sm font-medium transition-all focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50",
+      "variants": {
+        "primary": "bg-[#C6A87C] text-black hover:bg-[#E5CFA0] uppercase tracking-widest px-8 py-4 rounded-none",
+        "outline": "border border-[#C6A87C] text-[#C6A87C] hover:bg-[#C6A87C] hover:text-black uppercase tracking-widest px-8 py-4 rounded-none",
+        "ghost": "hover:bg-white/10 text-white hover:text-[#C6A87C]"
+      }
+    },
+    "ProductCard": {
+      "wrapper": "group relative cursor-pointer",
+      "image_container": "aspect-[3/4] w-full overflow-hidden bg-[#121212] relative",
+      "image": "h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-110",
+      "info": "mt-4 text-center space-y-1",
+      "title": "text-lg font-serif text-white",
+      "price": "text-[#C6A87C] font-medium"
+    },
+    "Input": {
+      "base": "flex h-12 w-full border-b border-white/20 bg-transparent px-3 py-2 text-sm text-white placeholder:text-neutral-500 focus-visible:outline-none focus-visible:border-[#C6A87C] disabled:cursor-not-allowed disabled:opacity-50 rounded-none transition-colors"
+    }
+  },
+  "motion": {
+    "transitions": {
+      "default": "transition-all duration-300 ease-in-out",
+      "slow": "transition-all duration-700 ease-out"
+    },
+    "animations": {
+      "fade_in_up": {
+        "initial": { "opacity": 0, "y": 20 },
+        "animate": { "opacity": 1, "y": 0 },
+        "transition": { "duration": 0.6 }
+      },
+      "stagger_children": {
+        "animate": "show",
+        "initial": "hidden",
+        "variants": {
+          "hidden": { "opacity": 0 },
+          "show": {
+            "opacity": 1,
+            "transition": {
+              "staggerChildren": 0.1
+            }
+          }
+        }
+      }
+    }
+  },
+  "accessibility": {
+    "contrast_check": "Ensure text over images has 'dark_overlay' or text-shadow. Gold text must be on dark backgrounds only.",
+    "focus_states": "Visible focus ring using standard Tailwind focus classes (focus:ring-1 focus:ring-[#C6A87C]).",
+    "aria_labels": "Required for all icon-only buttons (search, cart, menu)."
+  },
+  "media": {
+    "image_strategy": "Use high-contrast, cinematic photography with deep blacks. Jewelry should sparkle. Avoid flat white backgrounds unless necessary for product isolation.",
+    "zoom_library": "react-inner-image-zoom"
+  },
+  "image_urls": {
+    "hero": {
+      "url": "https://images.unsplash.com/photo-1769305171851-897e01aa095c?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzNDR8MHwxfHNlYXJjaHwxfHxnb2xkJTIwbmVja2xhY2UlMjBsdXh1cnklMjBibGFjayUyMGJhY2tncm91bmR8ZW58MHx8fHwxNzcyMTI3ODYxfDA&ixlib=rb-4.1.0&q=85",
+      "alt": "Elegant model wearing luxury gold jewelry on black background"
+    },
+    "categories": {
+      "rings": "https://images.pexels.com/photos/2732096/pexels-photo-2732096.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "earrings": "https://images.pexels.com/photos/5737290/pexels-photo-5737290.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "necklaces": "https://images.pexels.com/photos/4295007/pexels-photo-4295007.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "bracelets": "https://images.pexels.com/photos/34399114/pexels-photo-34399114.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
+    },
+    "custom_request": {
+      "craftsman": "https://images.unsplash.com/photo-1628058494685-6c2f796ac24a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxODl8MHwxfHNlYXJjaHwxfHxqZXdlbHJ5JTIwY3JhZnRzbWFuJTIwc2tldGNoaW5nJTIwZGVzaWdufGVufDB8fHx8MTc3MjEyNzgzN3ww&ixlib=rb-4.1.0&q=85"
+    }
+  },
+  "instructions_to_main_agent": [
+    "Install 'lucide-react' for icons.",
+    "Install 'framer-motion' for animations.",
+    "Install 'react-inner-image-zoom' for product detail zoom.",
+    "Use 'Bodoni Moda' from Google Fonts for headings. Ensure it is imported in index.css.",
+    "Use 'Montserrat' for body text.",
+    "Set the global theme to DARK mode by default in tailwind.config.js or index.css.",
+    "Implement the 'Bento Grid' for the homepage categories section.",
+    "Ensure all buttons have sharp edges (rounded-none) to match the luxury aesthetic.",
+    "The 'Custom Request' form should handle file uploads (mocked if backend not ready) and show a preview.",
+    "Use the provided image URLs for placeholders. DO NOT use generic placeholders.",
+    "Although the user mentioned Angular/Java, you are working in a React/FastAPI environment. Build the Frontend in React but structure the services to be compatible with a REST API."
+  ],
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
+    "Don't make generic centered layouts. Use asymmetry.",
+    "Create depth through layered design elements (z-index).",
+    "Use glass-morphism effects with backdrop filters (backdrop-blur-md) for sticky headers.",
+    "Every interaction needs micro-animations (hover, focus, active).",
+    "Use 2-3x more spacing than feels comfortable (p-12, p-24).",
+    "Subtle grain textures or noise overlays can enhance the luxury feel.",
+    "Use 'sonner' for toast notifications.",
+    "All interactive elements MUST include a 'data-testid' attribute."
+  ]
+}
