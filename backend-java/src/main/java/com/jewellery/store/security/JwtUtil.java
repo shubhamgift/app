@@ -52,11 +52,11 @@ public class JwtUtil {
     }
     
     private Claims extractAllClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
+        return Jwts.parser()
+                .verifyWith(Keys.hmacShaKeyFor(secret.getBytes()))
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
     }
     
     public boolean isTokenExpired(String token) {
