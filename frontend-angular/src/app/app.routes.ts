@@ -1,12 +1,13 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth.guard';
 import { adminGuard } from './guards/admin.guard';
+import { HomeComponent } from './components/home/home.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
+  { path: 'home', component: HomeComponent },
   
   // Public routes - To be implemented
-  // { path: 'home', component: HomeComponent },
   // { path: 'products', component: ProductsComponent },
   // { path: 'products/:id', component: ProductDetailComponent },
   // { path: 'login', component: LoginComponent },
