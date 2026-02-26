@@ -13,6 +13,7 @@ com/jewellery/store/dto/AuthResponse.class
 com/jewellery/store/repository/CustomRequestRepository.class
 com/jewellery/store/model/Product.class
 com/jewellery/store/controller/CustomRequestController.class
+com/jewellery/store/config/DataSeeder.class
 com/jewellery/store/controller/ProductController.class
 com/jewellery/store/repository/CategoryRepository.class
 com/jewellery/store/service/CustomRequestService.class

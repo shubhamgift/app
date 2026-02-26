@@ -12,6 +12,7 @@
 /app/backend-java/src/main/java/com/jewellery/store/repository/ProductRepository.java
 /app/backend-java/src/main/java/com/jewellery/store/model/Product.java
 /app/backend-java/src/main/java/com/jewellery/store/service/CustomRequestService.java
+/app/backend-java/src/main/java/com/jewellery/store/config/DataSeeder.java
 /app/backend-java/src/main/java/com/jewellery/store/dto/LoginRequest.java
 /app/backend-java/src/main/java/com/jewellery/store/controller/AdminController.java
 /app/backend-java/src/main/java/com/jewellery/store/controller/CategoryController.java
