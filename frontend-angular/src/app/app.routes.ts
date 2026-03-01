@@ -2,16 +2,18 @@ import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth.guard';
 import { adminGuard } from './guards/admin.guard';
 import { HomeComponent } from './components/home/home.component';
+import { LoginComponent } from './components/login/login.component';
+import { SignupComponent } from './components/signup/signup.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
+  { path: 'login', component: LoginComponent },
+  { path: 'signup', component: SignupComponent },
   
   // Public routes - To be implemented
   // { path: 'products', component: ProductsComponent },
   // { path: 'products/:id', component: ProductDetailComponent },
-  // { path: 'login', component: LoginComponent },
-  // { path: 'signup', component: SignupComponent },
   
   // Protected user routes - To be implemented
   // { path: 'orders', component: OrdersComponent, canActivate: [authGuard] },
