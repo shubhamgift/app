@@ -6,6 +6,11 @@ import { LoginComponent } from './components/login/login.component';
 import { SignupComponent } from './components/signup/signup.component';
 import { ProductsComponent } from './components/products/products.component';
 import { ProductDetailComponent } from './components/product-detail/product-detail.component';
+import { CartComponent } from './components/cart/cart.component';
+import { CheckoutComponent } from './components/checkout/checkout.component';
+import { OrderHistoryComponent } from './components/orders/order-history.component';
+import { CustomRequestComponent } from './components/custom-request/custom-request.component';
+import { MyRequestsComponent } from './components/custom-request/my-requests.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -15,11 +20,14 @@ export const routes: Routes = [
   { path: 'products', component: ProductsComponent },
   { path: 'products/:id', component: ProductDetailComponent },
   
-  // Protected user routes - To be implemented
-  // { path: 'orders', component: OrdersComponent, canActivate: [authGuard] },
-  // { path: 'orders/:id', component: OrderDetailComponent, canActivate: [authGuard] },
-  // { path: 'custom-request', component: CustomRequestFormComponent, canActivate: [authGuard] },
-  // { path: 'my-requests', component: MyRequestsComponent, canActivate: [authGuard] },
+  // Shopping cart (public access)
+  { path: 'cart', component: CartComponent },
+  
+  // Protected user routes
+  { path: 'checkout', component: CheckoutComponent, canActivate: [authGuard] },
+  { path: 'orders', component: OrderHistoryComponent, canActivate: [authGuard] },
+  { path: 'custom-request', component: CustomRequestComponent, canActivate: [authGuard] },
+  { path: 'my-requests', component: MyRequestsComponent, canActivate: [authGuard] },
   
   // Admin routes - To be implemented
   // { path: 'admin', component: AdminDashboardComponent, canActivate: [authGuard, adminGuard] },
