@@ -32,10 +32,24 @@ public class AdminController {
     @GetMapping("/dashboard")
     public ResponseEntity<Map<String, Object>> getDashboard() {
         Map<String, Object> dashboard = new HashMap<>();
+        
+        List<Order> allOrders = orderService.getAllOrders();
+        long pendingOrders = allOrders.stream()
+            .filter(o -> "PENDING".equals(o.getStatus()))
+            .count();
+        double totalRevenue = allOrders.stream()
+            .filter(o -> !"CANCELLED".equals(o.getStatus()))
+            .mapToDouble(o -> o.getTotalAmount().doubleValue())
+            .sum();
+        
         dashboard.put("totalProducts", productService.getAllProducts().size());
-        dashboard.put("totalOrders", orderService.getAllOrders().size());
+        dashboard.put("totalOrders", allOrders.size());
         dashboard.put("totalRequests", customRequestService.getAllRequests().size());
         dashboard.put("totalCategories", categoryService.getAllCategories().size());
+        dashboard.put("totalUsers", 0); // Would need UserService
+        dashboard.put("pendingOrders", pendingOrders);
+        dashboard.put("revenue", totalRevenue);
+        
         return ResponseEntity.ok(dashboard);
     }
     
