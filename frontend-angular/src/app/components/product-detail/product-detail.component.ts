@@ -441,6 +441,29 @@ import { Product } from '../../models/product.model';
       cursor: not-allowed;
     }
 
+    .view-cart-wrapper {
+      margin-top: 16px;
+    }
+
+    .btn-view-cart {
+      display: block;
+      width: 100%;
+      text-align: center;
+      padding: 12px 24px;
+      background: rgba(198, 168, 124, 0.1);
+      border: 1px solid #C6A87C;
+      color: #C6A87C;
+      text-decoration: none;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 0.875rem;
+    }
+
+    .btn-view-cart:hover {
+      background: rgba(198, 168, 124, 0.2);
+    }
+
     .btn-outline {
       flex: 1;
       padding: 16px 32px;
