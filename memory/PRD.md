@@ -22,7 +22,7 @@ A full-stack luxury jewellery e-commerce platform enabling customers to browse, 
 
 ### Admin Features
 1. **Secure Admin Login** - Role-based access
-2. **Dashboard** - Overview of orders, requests, products
+2. **Dashboard** - Overview of orders, requests, products, revenue
 3. **Product CRUD** - Create, update, delete jewellery items
 4. **Category CRUD** - Manage product categories
 5. **Order Management** - View and update order status
@@ -48,12 +48,12 @@ A full-stack luxury jewellery e-commerce platform enabling customers to browse, 
 - [x] CategoryController - public category endpoints  
 - [x] OrderController - authenticated order operations
 - [x] CustomRequestController - request submission
-- [x] AdminController - admin-only operations
+- [x] AdminController - full admin API
 - [x] SecurityConfig with proper URL matchers
 - [x] DataSeeder for initial data
 - [x] File upload service for images
 
-#### Frontend (Angular 21)
+#### Frontend (Angular 21) - Customer
 - [x] Project setup with standalone components
 - [x] Routing configuration
 - [x] Auth service with JWT management
@@ -72,6 +72,13 @@ A full-stack luxury jewellery e-commerce platform enabling customers to browse, 
 - [x] Custom request form with image upload
 - [x] My requests component
 
+#### Frontend (Angular 21) - Admin Panel
+- [x] Admin Dashboard with stats and quick actions
+- [x] Admin Products - List, create, edit, delete products
+- [x] Admin Orders - View all orders, update status, view details
+- [x] Admin Categories - CRUD for categories
+- [x] Admin Requests - View and respond to custom requests
+
 #### Documentation
 - [x] Complete setup guide
 - [x] API documentation
@@ -80,16 +87,7 @@ A full-stack luxury jewellery e-commerce platform enabling customers to browse, 
 
 ---
 
-### ⏳ Pending / Future Tasks
-
-#### Admin Panel UI (P2)
-- [ ] Admin dashboard with statistics
-- [ ] Product management interface
-- [ ] Category management interface
-- [ ] Order management with status updates
-- [ ] Custom request response interface
-
-#### Enhancements (P3)
+### ⏳ Future Enhancements (P3)
 - [ ] Product reviews and ratings
 - [ ] Wishlist functionality
 - [ ] Email notifications
@@ -117,11 +115,15 @@ A full-stack luxury jewellery e-commerce platform enabling customers to browse, 
 - `GET /api/custom-requests/my-requests`
 
 ### Admin Only
+- `GET /api/admin/dashboard`
 - `GET /api/admin/orders`
 - `PUT /api/admin/orders/{id}/status`
 - `POST /api/admin/products`
 - `PUT/DELETE /api/admin/products/{id}`
+- `POST /api/admin/categories`
+- `PUT/DELETE /api/admin/categories/{id}`
 - `GET /api/admin/custom-requests`
+- `PUT /api/admin/custom-requests/{id}`
 
 ---
 
@@ -132,4 +134,4 @@ A full-stack luxury jewellery e-commerce platform enabling customers to browse, 
 - Backend: `/app/backend-java/`
 - Frontend: `/app/frontend-angular/`
 - Setup Guide: `/app/COMPLETE_SETUP_GUIDE.md`
-- Archive: `/app/jewellery-store-complete-v2.tar.gz`
+- Archive: `/app/jewellery-store-complete-v3.tar.gz`
