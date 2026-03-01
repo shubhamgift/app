@@ -635,6 +635,20 @@ export class ProductDetailComponent implements OnInit {
     this.router.navigate(['/products']);
   }
 
+  addToCart(): void {
+    if (this.product && this.product.available) {
+      this.cartService.addToCart(this.product, 1);
+    }
+  }
+
+  isInCart(): boolean {
+    return this.product ? this.cartService.isInCart(this.product.id!) : false;
+  }
+
+  getCartCount(): number {
+    return this.cartService.getCartCount();
+  }
+
   placeOrder(): void {
     if (!this.authService.isAuthenticated()) {
       this.router.navigate(['/login'], { 
