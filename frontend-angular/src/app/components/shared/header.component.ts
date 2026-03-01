@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
+import { CartService } from '../../services/cart.service';
 import { AuthResponse } from '../../models/user.model';
 
 @Component({
@@ -12,7 +14,7 @@ import { AuthResponse } from '../../models/user.model';
     <header class="header">
       <div class="header-container">
         <div class="logo" routerLink="/" data-testid="logo">
-          <span class="logo-icon">💎</span>
+          <span class="logo-icon">&#128142;</span>
           <span class="logo-text">Luxury Jewels</span>
         </div>
 
@@ -22,12 +24,19 @@ import { AuthResponse } from '../../models/user.model';
           
           <ng-container *ngIf="currentUser">
             <a routerLink="/orders" routerLinkActive="active" data-testid="nav-orders">Orders</a>
-            <a routerLink="/custom-request" routerLinkActive="active" data-testid="nav-custom">Custom Request</a>
+            <a routerLink="/custom-request" routerLinkActive="active" data-testid="nav-custom">Custom</a>
+            <a routerLink="/my-requests" routerLinkActive="active" data-testid="nav-my-requests">My Requests</a>
             <a *ngIf="isAdmin" routerLink="/admin" routerLinkActive="active" data-testid="nav-admin">Admin</a>
           </ng-container>
         </nav>
 
         <div class="header-actions">
+          <!-- Cart Button -->
+          <a routerLink="/cart" class="cart-btn" data-testid="cart-btn">
+            <span class="cart-icon">&#128722;</span>
+            <span *ngIf="cartCount > 0" class="cart-badge" data-testid="cart-count">{{ cartCount }}</span>
+          </a>
+
           <ng-container *ngIf="currentUser; else notLoggedIn">
             <div class="user-menu">
               <span class="user-name" data-testid="user-name">{{ currentUser.fullName }}</span>
