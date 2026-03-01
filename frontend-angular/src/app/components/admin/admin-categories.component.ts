@@ -100,7 +100,7 @@ import { Category } from '../../models/category.model';
           <div class="delete-icon">&#9888;</div>
           <h2>Delete Category</h2>
           <p>Are you sure you want to delete "{{ categoryToDelete?.name }}"?</p>
-          <p class="warning" *ngIf="categoryToDelete?.productCount">
+          <p class="warning" *ngIf="categoryToDelete && categoryToDelete?.productCount">
             This category has {{ categoryToDelete.productCount }} products. They will become uncategorized.
           </p>
           <div class="form-actions">

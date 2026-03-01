@@ -671,7 +671,7 @@ export class AdminProductsComponent implements OnInit {
   }
 
   loadCategories(): void {
-    this.categoryService.getCategories().subscribe({
+    this.categoryService.getAllCategories().subscribe({
       next: (categories) => {
         this.categories = categories;
       },
