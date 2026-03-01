@@ -124,9 +124,9 @@ import { Product } from '../../models/product.model';
               <button 
                 class="btn-primary btn-order"
                 [disabled]="!product.available"
-                (click)="placeOrder()"
-                data-testid="place-order-btn">
-                {{ product.available ? 'Place Order' : 'Out of Stock' }}
+                (click)="addToCart()"
+                data-testid="add-to-cart-btn">
+                {{ isInCart() ? 'Added to Cart ✓' : (product.available ? 'Add to Cart' : 'Out of Stock') }}
               </button>
               
               <button 
@@ -135,6 +135,13 @@ import { Product } from '../../models/product.model';
                 data-testid="customize-btn">
                 Customize This Design
               </button>
+            </div>
+
+            <!-- View Cart Button -->
+            <div *ngIf="isInCart()" class="view-cart-wrapper">
+              <a routerLink="/cart" class="btn-view-cart" data-testid="view-cart-btn">
+                View Cart ({{ getCartCount() }} items)
+              </a>
             </div>
 
             <!-- Additional Info -->
