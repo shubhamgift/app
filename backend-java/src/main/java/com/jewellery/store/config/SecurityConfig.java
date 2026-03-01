@@ -35,11 +35,16 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/products/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/categories/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/products/upload-image").permitAll()
-                .requestMatchers("/admin/**").hasAuthority("ADMIN")
+                // Public endpoints - with /api prefix
+                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/products/upload-image").permitAll()
+                // Static resources
+                .requestMatchers("/uploads/**").permitAll()
+                // Admin endpoints
+                .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
+                // All other requests require authentication
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -50,7 +55,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200", "http://localhost:4201"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200", "http://localhost:4201", "http://localhost:3000"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
