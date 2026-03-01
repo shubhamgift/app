@@ -15,7 +15,7 @@ import { Category } from '../../models/category.model';
         <div class="hero-content">
           <h1 class="hero-title">Timeless Elegance</h1>
           <p class="hero-subtitle">Discover our exquisite collection of luxury jewellery</p>
-          <button class="btn-primary" data-testid="explore-btn">Explore Collection</button>
+          <button class="btn-primary" (click)="navigateToProducts()" data-testid="explore-btn">Explore Collection</button>
         </div>
       </section>
 
@@ -24,29 +24,15 @@ import { Category } from '../../models/category.model';
         <div class="container">
           <h2 class="section-title">Shop By Category</h2>
           <div class="categories-grid">
-            <div class="category-card" data-testid="category-rings">
+            <div 
+              *ngFor="let category of categories" 
+              class="category-card" 
+              [attr.data-testid]="'category-' + category.name.toLowerCase()"
+              (click)="navigateToCategory(category.id!)">
               <div class="category-image">
-                <img src="https://images.pexels.com/photos/2732096/pexels-photo-2732096.jpeg" alt="Rings">
+                <img [src]="getCategoryImage(category.name)" [alt]="category.name">
               </div>
-              <h3 class="category-name">Rings</h3>
-            </div>
-            <div class="category-card" data-testid="category-earrings">
-              <div class="category-image">
-                <img src="https://images.pexels.com/photos/5737290/pexels-photo-5737290.jpeg" alt="Earrings">
-              </div>
-              <h3 class="category-name">Earrings</h3>
-            </div>
-            <div class="category-card" data-testid="category-necklaces">
-              <div class="category-image">
-                <img src="https://images.pexels.com/photos/4295007/pexels-photo-4295007.jpeg" alt="Necklaces">
-              </div>
-              <h3 class="category-name">Necklaces</h3>
-            </div>
-            <div class="category-card" data-testid="category-bracelets">
-              <div class="category-image">
-                <img src="https://images.pexels.com/photos/34399114/pexels-photo-34399114.jpeg" alt="Bracelets">
-              </div>
-              <h3 class="category-name">Bracelets</h3>
+              <h3 class="category-name">{{ category.name }}</h3>
             </div>
           </div>
         </div>
@@ -58,7 +44,7 @@ import { Category } from '../../models/category.model';
           <div class="cta-content">
             <h2 class="cta-title">Create Your Dream Piece</h2>
             <p class="cta-text">Work with our artisans to design custom jewellery that reflects your unique style</p>
-            <button class="btn-outline" data-testid="custom-request-btn">Request Custom Design</button>
+            <button class="btn-outline" (click)="navigateToCustomRequest()" data-testid="custom-request-btn">Request Custom Design</button>
           </div>
         </div>
       </section>
