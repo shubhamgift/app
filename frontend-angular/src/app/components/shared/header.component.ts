@@ -140,6 +140,45 @@ import { AuthResponse } from '../../models/user.model';
       gap: 16px;
     }
 
+    .cart-btn {
+      position: relative;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(198, 168, 124, 0.1);
+      border: 1px solid rgba(198, 168, 124, 0.3);
+      transition: all 0.3s;
+      text-decoration: none;
+    }
+
+    .cart-btn:hover {
+      background: rgba(198, 168, 124, 0.2);
+      border-color: #C6A87C;
+    }
+
+    .cart-icon {
+      font-size: 1.25rem;
+    }
+
+    .cart-badge {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      min-width: 20px;
+      height: 20px;
+      background: #C6A87C;
+      color: #000;
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      padding: 0 6px;
+    }
+
     .user-menu {
       display: flex;
       align-items: center;
