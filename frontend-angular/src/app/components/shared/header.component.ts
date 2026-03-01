@@ -203,12 +203,15 @@ import { AuthResponse } from '../../models/user.model';
     }
   `]
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
   currentUser: AuthResponse | null = null;
   isAdmin = false;
+  cartCount = 0;
+  private cartSubscription?: Subscription;
 
   constructor(
     private authService: AuthService,
+    private cartService: CartService,
     private router: Router
   ) {}
 
@@ -217,6 +220,14 @@ export class HeaderComponent implements OnInit {
       this.currentUser = user;
       this.isAdmin = user?.role === 'ADMIN';
     });
+
+    this.cartSubscription = this.cartService.cart$.subscribe(items => {
+      this.cartCount = items.reduce((count, item) => count + item.quantity, 0);
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.cartSubscription?.unsubscribe();
   }
 
   logout(): void {
