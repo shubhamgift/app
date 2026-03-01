@@ -177,4 +177,50 @@ import { Category } from '../../models/category.model';
     }
   `]
 })
-export class HomeComponent {}
+export class HomeComponent implements OnInit {
+  categories: Category[] = [];
+
+  constructor(
+    private router: Router,
+    private categoryService: CategoryService
+  ) {}
+
+  ngOnInit(): void {
+    this.loadCategories();
+  }
+
+  loadCategories(): void {
+    this.categoryService.getAllCategories().subscribe({
+      next: (categories) => {
+        this.categories = categories;
+      },
+      error: (error) => {
+        console.error('Error loading categories:', error);
+      }
+    });
+  }
+
+  navigateToProducts(): void {
+    this.router.navigate(['/products']);
+  }
+
+  navigateToCategory(categoryId: number): void {
+    this.router.navigate(['/products'], { 
+      queryParams: { category: categoryId }
+    });
+  }
+
+  navigateToCustomRequest(): void {
+    this.router.navigate(['/custom-request']);
+  }
+
+  getCategoryImage(categoryName: string): string {
+    const images: { [key: string]: string } = {
+      'Rings': 'https://images.pexels.com/photos/2732096/pexels-photo-2732096.jpeg',
+      'Earrings': 'https://images.pexels.com/photos/5737290/pexels-photo-5737290.jpeg',
+      'Necklaces': 'https://images.pexels.com/photos/4295007/pexels-photo-4295007.jpeg',
+      'Bracelets': 'https://images.pexels.com/photos/34399114/pexels-photo-34399114.jpeg'
+    };
+    return images[categoryName] || 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338';
+  }
+}
