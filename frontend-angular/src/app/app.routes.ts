@@ -11,6 +11,11 @@ import { CheckoutComponent } from './components/checkout/checkout.component';
 import { OrderHistoryComponent } from './components/orders/order-history.component';
 import { CustomRequestComponent } from './components/custom-request/custom-request.component';
 import { MyRequestsComponent } from './components/custom-request/my-requests.component';
+import { AdminDashboardComponent } from './components/admin/admin-dashboard.component';
+import { AdminProductsComponent } from './components/admin/admin-products.component';
+import { AdminOrdersComponent } from './components/admin/admin-orders.component';
+import { AdminCategoriesComponent } from './components/admin/admin-categories.component';
+import { AdminRequestsComponent } from './components/admin/admin-requests.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -29,12 +34,13 @@ export const routes: Routes = [
   { path: 'custom-request', component: CustomRequestComponent, canActivate: [authGuard] },
   { path: 'my-requests', component: MyRequestsComponent, canActivate: [authGuard] },
   
-  // Admin routes - To be implemented
-  // { path: 'admin', component: AdminDashboardComponent, canActivate: [authGuard, adminGuard] },
-  // { path: 'admin/products', component: AdminProductsComponent, canActivate: [authGuard, adminGuard] },
-  // { path: 'admin/categories', component: AdminCategoriesComponent, canActivate: [authGuard, adminGuard] },
-  // { path: 'admin/orders', component: AdminOrdersComponent, canActivate: [authGuard, adminGuard] },
-  // { path: 'admin/requests', component: AdminRequestsComponent, canActivate: [authGuard, adminGuard] },
+  // Admin routes
+  { path: 'admin', component: AdminDashboardComponent, canActivate: [authGuard, adminGuard] },
+  { path: 'admin/products', component: AdminProductsComponent, canActivate: [authGuard, adminGuard] },
+  { path: 'admin/products/new', component: AdminProductsComponent, canActivate: [authGuard, adminGuard] },
+  { path: 'admin/orders', component: AdminOrdersComponent, canActivate: [authGuard, adminGuard] },
+  { path: 'admin/categories', component: AdminCategoriesComponent, canActivate: [authGuard, adminGuard] },
+  { path: 'admin/requests', component: AdminRequestsComponent, canActivate: [authGuard, adminGuard] },
   
   // Wildcard route
   { path: '**', redirectTo: '/home' }
