@@ -5,6 +5,7 @@ import { HomeComponent } from './components/home/home.component';
 import { LoginComponent } from './components/login/login.component';
 import { SignupComponent } from './components/signup/signup.component';
 import { ProductsComponent } from './components/products/products.component';
+import { ProductDetailComponent } from './components/product-detail/product-detail.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -12,9 +13,7 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'signup', component: SignupComponent },
   { path: 'products', component: ProductsComponent },
-  
-  // Public routes - To be implemented
-  // { path: 'products/:id', component: ProductDetailComponent },
+  { path: 'products/:id', component: ProductDetailComponent },
   
   // Protected user routes - To be implemented
   // { path: 'orders', component: OrdersComponent, canActivate: [authGuard] },
