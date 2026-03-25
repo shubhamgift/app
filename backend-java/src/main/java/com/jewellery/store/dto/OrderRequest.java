@@ -19,5 +19,7 @@ public class OrderRequest {
     public static class OrderItemRequest {
         private Long productId;
         private Integer quantity;
+        // "IMITATION" or "REAL"
+        private String jewelryType = "IMITATION";
     }
 }

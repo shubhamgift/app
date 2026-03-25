@@ -1,15 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../services/product.service';
 import { AuthService } from '../../services/auth.service';
 import { CartService } from '../../services/cart.service';
-import { Product } from '../../models/product.model';
+import { Product, JewelryType } from '../../models/product.model';
 
 @Component({
   selector: 'app-product-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   template: `
     <div class="product-detail-page">
       <!-- Loading State -->
@@ -30,14 +31,13 @@ import { Product } from '../../models/product.model';
         <!-- Back Button -->
         <div class="back-navigation">
           <button class="btn-back" (click)="goBack()" data-testid="back-btn">
-            <span class="back-arrow">←</span> Back to Products
+            <span class="back-arrow">&#8592;</span> Back to Products
           </button>
         </div>
 
         <div class="product-detail-content">
           <!-- Image Gallery -->
           <div class="image-gallery-section">
-            <!-- Main Image -->
             <div class="main-image-container" data-testid="main-image">
               <img 
                 [src]="selectedImage" 
@@ -48,7 +48,6 @@ import { Product } from '../../models/product.model';
               <div class="zoom-hint" *ngIf="!isZoomed">Click to zoom</div>
             </div>
 
-            <!-- Thumbnails -->
             <div class="thumbnails-container" *ngIf="product.images && product.images.length > 1">
               <div 
                 *ngFor="let image of product.images; let i = index" 
@@ -63,17 +62,61 @@ import { Product } from '../../models/product.model';
 
           <!-- Product Information -->
           <div class="product-info-section">
-            <!-- Category Badge -->
             <div class="category-badge" data-testid="product-category">
               {{ product.category?.name }}
             </div>
 
-            <!-- Product Name -->
             <h1 class="product-name" data-testid="product-name">{{ product.name }}</h1>
 
-            <!-- Price -->
-            <div class="product-price" data-testid="product-price">
-              \${{ product.price | number:'1.2-2' }}
+            <!-- Jewelry Type Selection -->
+            <div class="jewelry-type-selection" data-testid="jewelry-type-selection">
+              <h3>Select Type</h3>
+              <div class="type-options">
+                <!-- Imitation Option -->
+                <div 
+                  class="type-option"
+                  [class.selected]="selectedType === 'IMITATION'"
+                  (click)="selectType('IMITATION')"
+                  data-testid="type-imitation">
+                  <div class="type-header">
+                    <span class="type-radio">
+                      <span class="radio-inner" *ngIf="selectedType === 'IMITATION'"></span>
+                    </span>
+                    <span class="type-name">Imitation Jewellery</span>
+                  </div>
+                  <div class="type-details">
+                    <p class="type-materials">{{ product.metal || 'Alloy' }} | {{ product.gemstone || 'Crystal' }}</p>
+                    <p class="type-price" data-testid="imitation-price">
+                      \${{ product.price | number:'1.2-2' }}
+                    </p>
+                  </div>
+                  <p class="type-description">High-quality imitation piece with premium finish</p>
+                </div>
+
+                <!-- Real Gold/Diamond Option -->
+                <div 
+                  *ngIf="product.hasRealVersion !== false"
+                  class="type-option real-option"
+                  [class.selected]="selectedType === 'REAL'"
+                  (click)="selectType('REAL')"
+                  data-testid="type-real">
+                  <div class="type-header">
+                    <span class="type-radio">
+                      <span class="radio-inner" *ngIf="selectedType === 'REAL'"></span>
+                    </span>
+                    <span class="type-name">Real Gold / Diamond</span>
+                    <span class="premium-badge">Premium</span>
+                  </div>
+                  <div class="type-details">
+                    <p class="type-materials">{{ product.realMetal || '18K Gold' }} | {{ product.realGemstone || 'Natural Diamond' }}</p>
+                    <p class="type-price" data-testid="real-price">
+                      <span *ngIf="product.realPrice">\${{ product.realPrice | number:'1.2-2' }}</span>
+                      <span *ngIf="!product.realPrice" class="contact-price">Contact for Price</span>
+                    </p>
+                  </div>
+                  <p class="type-description">Authentic precious metals and certified gemstones</p>
+                </div>
+              </div>
             </div>
 
             <!-- Availability -->
@@ -82,7 +125,6 @@ import { Product } from '../../models/product.model';
               {{ product.available ? 'In Stock' : 'Out of Stock' }}
             </div>
 
-            <!-- Divider -->
             <div class="divider"></div>
 
             <!-- Description -->
@@ -91,17 +133,21 @@ import { Product } from '../../models/product.model';
               <p data-testid="product-description">{{ product.description || 'No description available.' }}</p>
             </div>
 
-            <!-- Product Details -->
+            <!-- Product Details - Dynamic based on selected type -->
             <div class="product-details">
-              <h3>Details</h3>
+              <h3>{{ selectedType === 'REAL' ? 'Premium Details' : 'Details' }}</h3>
               <div class="details-grid">
-                <div class="detail-item" *ngIf="product.metal">
+                <div class="detail-item">
                   <span class="detail-label">Metal:</span>
-                  <span class="detail-value" data-testid="product-metal">{{ product.metal }}</span>
+                  <span class="detail-value" data-testid="product-metal">
+                    {{ selectedType === 'REAL' ? (product.realMetal || '18K Gold') : (product.metal || 'Alloy') }}
+                  </span>
                 </div>
-                <div class="detail-item" *ngIf="product.gemstone">
+                <div class="detail-item">
                   <span class="detail-label">Gemstone:</span>
-                  <span class="detail-value" data-testid="product-gemstone">{{ product.gemstone }}</span>
+                  <span class="detail-value" data-testid="product-gemstone">
+                    {{ selectedType === 'REAL' ? (product.realGemstone || 'Natural Diamond') : (product.gemstone || 'Crystal') }}
+                  </span>
                 </div>
                 <div class="detail-item" *ngIf="product.style">
                   <span class="detail-label">Style:</span>
@@ -111,22 +157,43 @@ import { Product } from '../../models/product.model';
             </div>
 
             <!-- Specifications -->
-            <div class="product-specifications" *ngIf="product.specifications">
+            <div class="product-specifications" *ngIf="getSpecifications()">
               <h3>Specifications</h3>
-              <p data-testid="product-specifications">{{ product.specifications }}</p>
+              <p data-testid="product-specifications">{{ getSpecifications() }}</p>
             </div>
 
-            <!-- Divider -->
             <div class="divider"></div>
+
+            <!-- Selected Price Display -->
+            <div class="selected-price-display">
+              <span class="price-label">Selected:</span>
+              <span class="price-type">{{ selectedType === 'REAL' ? 'Real Gold/Diamond' : 'Imitation' }}</span>
+              <span class="price-value" *ngIf="getCurrentPrice() !== null">
+                \${{ getCurrentPrice() | number:'1.2-2' }}
+              </span>
+              <span class="price-value contact" *ngIf="getCurrentPrice() === null">
+                Price on Request
+              </span>
+            </div>
 
             <!-- Action Buttons -->
             <div class="action-buttons">
               <button 
+                *ngIf="getCurrentPrice() !== null"
                 class="btn-primary btn-order"
                 [disabled]="!product.available"
                 (click)="addToCart()"
                 data-testid="add-to-cart-btn">
-                {{ isInCart() ? 'Added to Cart ✓' : (product.available ? 'Add to Cart' : 'Out of Stock') }}
+                {{ isInCart() ? 'Added to Cart &#10004;' : (product.available ? 'Add to Cart' : 'Out of Stock') }}
+              </button>
+              
+              <button 
+                *ngIf="getCurrentPrice() === null"
+                class="btn-primary btn-order quote-btn"
+                [disabled]="!product.available"
+                (click)="requestQuote()"
+                data-testid="request-quote-btn">
+                Request Quote
               </button>
               
               <button 
@@ -147,27 +214,23 @@ import { Product } from '../../models/product.model';
             <!-- Additional Info -->
             <div class="additional-info">
               <div class="info-item">
-                <span class="info-icon">✓</span>
-                <span>Authenticity Certificate Included</span>
+                <span class="info-icon">&#10004;</span>
+                <span>{{ selectedType === 'REAL' ? 'Certificate of Authenticity' : 'Quality Guaranteed' }}</span>
               </div>
               <div class="info-item">
-                <span class="info-icon">✓</span>
-                <span>Free Shipping on Orders Over $1000</span>
+                <span class="info-icon">&#128230;</span>
+                <span>Free Shipping over $1,000</span>
               </div>
               <div class="info-item">
-                <span class="info-icon">✓</span>
-                <span>30-Day Return Policy</span>
+                <span class="info-icon">&#128274;</span>
+                <span>Secure Payment</span>
+              </div>
+              <div class="info-item" *ngIf="selectedType === 'REAL'">
+                <span class="info-icon">&#128142;</span>
+                <span>Lifetime Warranty</span>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      <!-- Zoom Modal -->
-      <div class="zoom-modal" *ngIf="isZoomed" (click)="toggleZoom()" data-testid="zoom-modal">
-        <div class="zoom-modal-content">
-          <button class="close-zoom" (click)="toggleZoom()">✕</button>
-          <img [src]="selectedImage" [alt]="product?.name" class="zoomed-image">
         </div>
       </div>
     </div>
@@ -181,7 +244,7 @@ import { Product } from '../../models/product.model';
     .loading-container,
     .not-found-container {
       text-align: center;
-      padding: 120px 24px;
+      padding: 80px 24px;
     }
 
     .spinner {
@@ -198,17 +261,15 @@ import { Product } from '../../models/product.model';
       to { transform: rotate(360deg); }
     }
 
-    .loading-container p,
+    .not-found-container h2 {
+      font-family: 'Bodoni Moda', serif;
+      color: #C6A87C;
+      margin-bottom: 16px;
+    }
+
     .not-found-container p {
       color: #A1A1AA;
       margin-bottom: 24px;
-    }
-
-    .not-found-container h2 {
-      color: #C6A87C;
-      font-family: 'Bodoni Moda', serif;
-      font-size: 2rem;
-      margin-bottom: 16px;
     }
 
     .product-detail-container {
@@ -217,104 +278,88 @@ import { Product } from '../../models/product.model';
     }
 
     .back-navigation {
-      margin-bottom: 40px;
+      margin-bottom: 32px;
     }
 
     .btn-back {
       background: transparent;
-      border: none;
+      border: 1px solid rgba(198, 168, 124, 0.3);
       color: #C6A87C;
-      font-size: 1rem;
+      padding: 10px 20px;
       cursor: pointer;
+      transition: all 0.3s;
       display: flex;
       align-items: center;
       gap: 8px;
-      transition: all 0.3s;
-      padding: 8px 0;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
 
     .btn-back:hover {
-      gap: 12px;
-      color: #E5CFA0;
-    }
-
-    .back-arrow {
-      font-size: 1.5rem;
-      transition: transform 0.3s;
-    }
-
-    .btn-back:hover .back-arrow {
-      transform: translateX(-4px);
+      background: rgba(198, 168, 124, 0.1);
     }
 
     .product-detail-content {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 80px;
+      gap: 60px;
     }
 
     /* Image Gallery */
     .image-gallery-section {
       position: sticky;
-      top: 100px;
-      height: fit-content;
+      top: 120px;
+      align-self: start;
     }
 
     .main-image-container {
       position: relative;
-      aspect-ratio: 3/4;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      aspect-ratio: 4/5;
       overflow: hidden;
-      margin-bottom: 24px;
-      cursor: zoom-in;
+      margin-bottom: 16px;
+      cursor: pointer;
     }
 
     .main-image {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: transform 0.5s ease;
+      transition: transform 0.3s;
     }
 
-    .main-image-container:hover .main-image {
-      transform: scale(1.05);
+    .main-image.zoomed {
+      transform: scale(1.5);
     }
 
     .zoom-hint {
       position: absolute;
       bottom: 16px;
       right: 16px;
-      background: rgba(0, 0, 0, 0.8);
+      background: rgba(0, 0, 0, 0.7);
       color: #C6A87C;
-      padding: 8px 16px;
-      font-size: 0.875rem;
-      border: 1px solid rgba(198, 168, 124, 0.3);
-      pointer-events: none;
+      padding: 8px 12px;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
 
     .thumbnails-container {
       display: flex;
       gap: 12px;
-      overflow-x: auto;
-      padding-bottom: 8px;
     }
 
     .thumbnail {
-      flex-shrink: 0;
       width: 80px;
       height: 100px;
-      cursor: pointer;
       border: 2px solid transparent;
+      cursor: pointer;
       transition: all 0.3s;
       overflow: hidden;
     }
 
+    .thumbnail.active,
     .thumbnail:hover {
-      border-color: rgba(198, 168, 124, 0.5);
-    }
-
-    .thumbnail.active {
       border-color: #C6A87C;
     }
 
@@ -326,43 +371,163 @@ import { Product } from '../../models/product.model';
 
     /* Product Info */
     .product-info-section {
-      padding: 20px 0;
+      padding-top: 20px;
     }
 
     .category-badge {
       display: inline-block;
       padding: 6px 16px;
-      background: rgba(198, 168, 124, 0.2);
+      background: rgba(198, 168, 124, 0.1);
+      border: 1px solid rgba(198, 168, 124, 0.3);
       color: #C6A87C;
       font-size: 0.75rem;
       text-transform: uppercase;
-      letter-spacing: 1.5px;
-      border: 1px solid rgba(198, 168, 124, 0.3);
-      margin-bottom: 24px;
+      letter-spacing: 2px;
+      margin-bottom: 16px;
     }
 
     .product-name {
       font-family: 'Bodoni Moda', serif;
       font-size: 2.5rem;
       color: #FAFAFA;
-      margin-bottom: 16px;
+      margin-bottom: 24px;
       line-height: 1.2;
     }
 
-    .product-price {
-      font-size: 2rem;
+    /* Jewelry Type Selection */
+    .jewelry-type-selection {
+      margin-bottom: 24px;
+    }
+
+    .jewelry-type-selection h3 {
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
       color: #C6A87C;
-      font-weight: 600;
       margin-bottom: 16px;
     }
 
+    .type-options {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .type-option {
+      padding: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.02);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .type-option:hover {
+      border-color: rgba(198, 168, 124, 0.4);
+    }
+
+    .type-option.selected {
+      border-color: #C6A87C;
+      background: rgba(198, 168, 124, 0.05);
+    }
+
+    .type-option.real-option.selected {
+      border-color: #10B981;
+      background: rgba(16, 185, 129, 0.05);
+    }
+
+    .type-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .type-radio {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .type-option.selected .type-radio {
+      border-color: #C6A87C;
+    }
+
+    .type-option.real-option.selected .type-radio {
+      border-color: #10B981;
+    }
+
+    .radio-inner {
+      width: 10px;
+      height: 10px;
+      background: #C6A87C;
+      border-radius: 50%;
+    }
+
+    .type-option.real-option.selected .radio-inner {
+      background: #10B981;
+    }
+
+    .type-name {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: #FAFAFA;
+    }
+
+    .premium-badge {
+      padding: 4px 10px;
+      background: linear-gradient(135deg, #10B981, #059669);
+      color: white;
+      font-size: 0.625rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+
+    .type-details {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .type-materials {
+      color: #A1A1AA;
+      font-size: 0.875rem;
+    }
+
+    .type-price {
+      font-family: 'Bodoni Moda', serif;
+      font-size: 1.5rem;
+      color: #C6A87C;
+    }
+
+    .type-option.real-option .type-price {
+      color: #10B981;
+    }
+
+    .contact-price {
+      font-size: 1rem;
+      color: #F59E0B;
+      font-family: 'Montserrat', sans-serif;
+      font-style: italic;
+    }
+
+    .type-description {
+      color: #71717A;
+      font-size: 0.8125rem;
+    }
+
+    /* Availability */
     .availability {
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 0.9375rem;
       color: #EF4444;
-      margin-bottom: 32px;
+      font-size: 0.875rem;
     }
 
     .availability.in-stock {
@@ -372,48 +537,46 @@ import { Product } from '../../models/product.model';
     .status-dot {
       width: 8px;
       height: 8px;
-      border-radius: 50%;
       background: currentColor;
+      border-radius: 50%;
     }
 
     .divider {
       height: 1px;
       background: rgba(198, 168, 124, 0.2);
-      margin: 32px 0;
+      margin: 24px 0;
     }
 
     .product-description h3,
     .product-details h3,
     .product-specifications h3 {
-      color: #C6A87C;
-      font-size: 1rem;
+      font-size: 0.875rem;
       text-transform: uppercase;
-      letter-spacing: 1.5px;
-      margin-bottom: 16px;
-      font-weight: 600;
+      letter-spacing: 1px;
+      color: #C6A87C;
+      margin-bottom: 12px;
     }
 
     .product-description p,
     .product-specifications p {
       color: #D4D4D8;
-      line-height: 1.8;
-      font-size: 0.9375rem;
+      line-height: 1.7;
     }
 
-    .product-details {
-      margin: 32px 0;
+    .product-description,
+    .product-details,
+    .product-specifications {
+      margin-bottom: 24px;
     }
 
     .details-grid {
-      display: flex;
-      flex-direction: column;
+      display: grid;
       gap: 12px;
     }
 
     .detail-item {
       display: flex;
       gap: 12px;
-      font-size: 0.9375rem;
     }
 
     .detail-label {
@@ -423,26 +586,98 @@ import { Product } from '../../models/product.model';
 
     .detail-value {
       color: #FAFAFA;
+    }
+
+    /* Selected Price Display */
+    .selected-price-display {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 20px;
+      background: rgba(198, 168, 124, 0.1);
+      border: 1px solid rgba(198, 168, 124, 0.3);
+      margin-bottom: 24px;
+    }
+
+    .price-label {
+      color: #A1A1AA;
+      font-size: 0.875rem;
+    }
+
+    .price-type {
+      color: #FAFAFA;
       font-weight: 500;
     }
 
+    .price-value {
+      margin-left: auto;
+      font-family: 'Bodoni Moda', serif;
+      font-size: 1.75rem;
+      color: #C6A87C;
+    }
+
+    .price-value.contact {
+      font-size: 1rem;
+      color: #F59E0B;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    /* Action Buttons */
     .action-buttons {
       display: flex;
       gap: 16px;
-      margin: 32px 0;
+      margin-bottom: 16px;
     }
 
-    .btn-order {
+    .btn-primary {
       flex: 1;
+      padding: 16px 32px;
+      background: #C6A87C;
+      border: none;
+      color: #000;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: all 0.3s;
     }
 
-    .btn-order:disabled {
+    .btn-primary:hover {
+      background: #E5CFA0;
+    }
+
+    .btn-primary:disabled {
       opacity: 0.5;
       cursor: not-allowed;
     }
 
+    .btn-primary.quote-btn {
+      background: #F59E0B;
+    }
+
+    .btn-primary.quote-btn:hover {
+      background: #D97706;
+    }
+
+    .btn-outline {
+      flex: 1;
+      padding: 16px 32px;
+      background: transparent;
+      border: 1px solid #C6A87C;
+      color: #C6A87C;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-outline:hover {
+      background: rgba(198, 168, 124, 0.1);
+    }
+
     .view-cart-wrapper {
-      margin-top: 16px;
+      margin-bottom: 24px;
     }
 
     .btn-view-cart {
@@ -464,87 +699,30 @@ import { Product } from '../../models/product.model';
       background: rgba(198, 168, 124, 0.2);
     }
 
-    .btn-outline {
-      flex: 1;
-      padding: 16px 32px;
-    }
-
+    /* Additional Info */
     .additional-info {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      padding: 24px;
-      background: rgba(198, 168, 124, 0.05);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.02);
       border: 1px solid rgba(198, 168, 124, 0.2);
     }
 
     .info-item {
       display: flex;
       align-items: center;
-      gap: 12px;
-      color: #D4D4D8;
-      font-size: 0.875rem;
+      gap: 10px;
+      color: #A1A1AA;
+      font-size: 0.8125rem;
     }
 
     .info-icon {
       color: #C6A87C;
-      font-weight: bold;
-    }
-
-    /* Zoom Modal */
-    .zoom-modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.95);
-      z-index: 9999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 40px;
-      cursor: zoom-out;
-      animation: fadeIn 0.3s;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    .zoom-modal-content {
-      position: relative;
-      max-width: 90vw;
-      max-height: 90vh;
-    }
-
-    .close-zoom {
-      position: absolute;
-      top: -40px;
-      right: 0;
-      background: transparent;
-      border: none;
-      color: #C6A87C;
-      font-size: 2rem;
-      cursor: pointer;
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: transform 0.3s;
-    }
-
-    .close-zoom:hover {
-      transform: rotate(90deg);
-    }
-
-    .zoomed-image {
-      max-width: 90vw;
-      max-height: 90vh;
-      object-fit: contain;
     }
 
     /* Responsive */
-    @media (max-width: 968px) {
+    @media (max-width: 1024px) {
       .product-detail-content {
         grid-template-columns: 1fr;
         gap: 40px;
@@ -553,7 +731,9 @@ import { Product } from '../../models/product.model';
       .image-gallery-section {
         position: static;
       }
+    }
 
+    @media (max-width: 640px) {
       .product-name {
         font-size: 2rem;
       }
@@ -561,28 +741,25 @@ import { Product } from '../../models/product.model';
       .action-buttons {
         flex-direction: column;
       }
-    }
 
-    @media (max-width: 640px) {
-      .product-detail-page {
-        padding: 24px 16px 60px;
+      .additional-info {
+        grid-template-columns: 1fr;
       }
 
-      .product-name {
-        font-size: 1.75rem;
-      }
-
-      .product-price {
-        font-size: 1.5rem;
+      .type-details {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
       }
     }
   `]
 })
 export class ProductDetailComponent implements OnInit {
   product: Product | null = null;
-  loading = false;
+  loading = true;
   selectedImage = '';
   isZoomed = false;
+  selectedType: JewelryType = 'IMITATION';
 
   constructor(
     private route: ActivatedRoute,
@@ -594,10 +771,8 @@ export class ProductDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
-      const id = +params['id'];
-      if (id) {
-        this.loadProduct(id);
-      }
+      const productId = +params['id'];
+      this.loadProduct(productId);
     });
   }
 
@@ -606,7 +781,7 @@ export class ProductDetailComponent implements OnInit {
     this.productService.getProductById(id).subscribe({
       next: (product) => {
         this.product = product;
-        this.selectedImage = this.getDefaultImage(product);
+        this.selectedImage = product.images?.[0] || '';
         this.loading = false;
       },
       error: (error) => {
@@ -616,19 +791,35 @@ export class ProductDetailComponent implements OnInit {
     });
   }
 
-  getDefaultImage(product: Product): string {
-    if (product.images && product.images.length > 0) {
-      return product.images[0];
-    }
-    return 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=800';
-  }
-
   selectImage(image: string): void {
     this.selectedImage = image;
+    this.isZoomed = false;
   }
 
   toggleZoom(): void {
     this.isZoomed = !this.isZoomed;
+  }
+
+  selectType(type: JewelryType): void {
+    this.selectedType = type;
+  }
+
+  getCurrentPrice(): number | null {
+    if (!this.product) return null;
+    
+    if (this.selectedType === 'REAL') {
+      return this.product.realPrice || null;
+    }
+    return this.product.price;
+  }
+
+  getSpecifications(): string {
+    if (!this.product) return '';
+    
+    if (this.selectedType === 'REAL' && this.product.realSpecifications) {
+      return this.product.realSpecifications;
+    }
+    return this.product.specifications || '';
   }
 
   goBack(): void {
@@ -637,19 +828,11 @@ export class ProductDetailComponent implements OnInit {
 
   addToCart(): void {
     if (this.product && this.product.available) {
-      this.cartService.addToCart(this.product, 1);
+      this.cartService.addToCart(this.product, 1, this.selectedType);
     }
   }
 
-  isInCart(): boolean {
-    return this.product ? this.cartService.isInCart(this.product.id!) : false;
-  }
-
-  getCartCount(): number {
-    return this.cartService.getCartCount();
-  }
-
-  placeOrder(): void {
+  requestQuote(): void {
     if (!this.authService.isAuthenticated()) {
       this.router.navigate(['/login'], { 
         queryParams: { returnUrl: `/products/${this.product?.id}` }
@@ -657,8 +840,18 @@ export class ProductDetailComponent implements OnInit {
       return;
     }
 
-    // For now, navigate to orders page
-    // In a complete implementation, this would open a cart or checkout flow
-    alert('Order functionality will be implemented. For now, please contact us to place an order.');
+    // Add to cart with quote pending
+    if (this.product) {
+      this.cartService.addToCart(this.product, 1, 'REAL');
+      this.router.navigate(['/cart']);
+    }
+  }
+
+  isInCart(): boolean {
+    return this.product ? this.cartService.isInCart(this.product.id!, this.selectedType) : false;
+  }
+
+  getCartCount(): number {
+    return this.cartService.getCartCount();
   }
 }

@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Product } from '../models/product.model';
+import { Product, JewelryType } from '../models/product.model';
 
 export interface CartItem {
   product: Product;
   quantity: number;
+  jewelryType: JewelryType;
 }
 
 @Injectable({
@@ -32,25 +33,32 @@ export class CartService {
     this.cartSubject.next(this.cartItems);
   }
 
-  addToCart(product: Product, quantity: number = 1): void {
-    const existingItem = this.cartItems.find(item => item.product.id === product.id);
+  addToCart(product: Product, quantity: number = 1, jewelryType: JewelryType = 'IMITATION'): void {
+    // Check if same product with same jewelry type exists
+    const existingItem = this.cartItems.find(
+      item => item.product.id === product.id && item.jewelryType === jewelryType
+    );
     
     if (existingItem) {
       existingItem.quantity += quantity;
     } else {
-      this.cartItems.push({ product, quantity });
+      this.cartItems.push({ product, quantity, jewelryType });
     }
     
     this.saveCart();
   }
 
-  removeFromCart(productId: number): void {
-    this.cartItems = this.cartItems.filter(item => item.product.id !== productId);
+  removeFromCart(productId: number, jewelryType: JewelryType): void {
+    this.cartItems = this.cartItems.filter(
+      item => !(item.product.id === productId && item.jewelryType === jewelryType)
+    );
     this.saveCart();
   }
 
-  updateQuantity(productId: number, quantity: number): void {
-    const item = this.cartItems.find(item => item.product.id === productId);
+  updateQuantity(productId: number, jewelryType: JewelryType, quantity: number): void {
+    const item = this.cartItems.find(
+      item => item.product.id === productId && item.jewelryType === jewelryType
+    );
     if (item) {
       item.quantity = Math.max(1, quantity);
       this.saveCart();
@@ -72,10 +80,31 @@ export class CartService {
   }
 
   getCartTotal(): number {
-    return this.cartItems.reduce((total, item) => total + (item.product.price * item.quantity), 0);
+    return this.cartItems.reduce((total, item) => {
+      const price = this.getItemPrice(item);
+      return total + (price * item.quantity);
+    }, 0);
   }
 
-  isInCart(productId: number): boolean {
+  getItemPrice(item: CartItem): number {
+    if (item.jewelryType === 'REAL') {
+      return item.product.realPrice || 0;
+    }
+    return item.product.price;
+  }
+
+  hasQuotePendingItems(): boolean {
+    return this.cartItems.some(
+      item => item.jewelryType === 'REAL' && !item.product.realPrice
+    );
+  }
+
+  isInCart(productId: number, jewelryType?: JewelryType): boolean {
+    if (jewelryType) {
+      return this.cartItems.some(
+        item => item.product.id === productId && item.jewelryType === jewelryType
+      );
+    }
     return this.cartItems.some(item => item.product.id === productId);
   }
 }

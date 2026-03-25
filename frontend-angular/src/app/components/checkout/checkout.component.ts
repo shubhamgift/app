@@ -182,9 +182,15 @@ import { AuthService } from '../../services/auth.service';
                   </div>
                   <div class="summary-item-details">
                     <p class="summary-item-name">{{ item.product.name }}</p>
+                    <p class="summary-item-type" [class.real]="item.jewelryType === 'REAL'">
+                      {{ item.jewelryType === 'REAL' ? 'Real Gold/Diamond' : 'Imitation' }}
+                    </p>
                     <p class="summary-item-qty">Qty: {{ item.quantity }}</p>
                   </div>
-                  <p class="summary-item-price">\${{ (item.product.price * item.quantity) | number:'1.2-2' }}</p>
+                  <p class="summary-item-price">
+                    <span *ngIf="getItemPrice(item) > 0">\${{ (getItemPrice(item) * item.quantity) | number:'1.2-2' }}</span>
+                    <span *ngIf="getItemPrice(item) === 0" class="quote-pending">Quote Pending</span>
+                  </p>
                 </div>
               </div>
 
@@ -466,6 +472,18 @@ import { AuthService } from '../../services/auth.service';
       margin-bottom: 4px;
     }
 
+    .summary-item-type {
+      font-size: 0.625rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #C6A87C;
+      margin-bottom: 4px;
+    }
+
+    .summary-item-type.real {
+      color: #10B981;
+    }
+
     .summary-item-qty {
       color: #A1A1AA;
       font-size: 0.75rem;
@@ -474,6 +492,12 @@ import { AuthService } from '../../services/auth.service';
     .summary-item-price {
       color: #C6A87C;
       font-weight: 500;
+    }
+
+    .summary-item-price .quote-pending {
+      color: #F59E0B;
+      font-size: 0.75rem;
+      font-style: italic;
     }
 
     .divider {
@@ -623,6 +647,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     return product.images?.[0] || 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=200';
   }
 
+  getItemPrice(item: CartItem): number {
+    return this.cartService.getItemPrice(item);
+  }
+
   getCartTotal(): number {
     return this.cartService.getCartTotal();
   }
@@ -651,7 +679,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     const orderRequest = {
       items: this.cartItems.map(item => ({
         productId: item.product.id!,
-        quantity: item.quantity
+        quantity: item.quantity,
+        jewelryType: item.jewelryType
       })),
       shippingAddress: fullAddress,
       phone: this.shippingInfo.phone

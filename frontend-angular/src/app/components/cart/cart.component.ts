@@ -28,9 +28,19 @@ import { AuthService } from '../../services/auth.service';
         <!-- Cart Items -->
         <div *ngIf="cartItems.length > 0" class="cart-content">
           <div class="cart-items">
+            <!-- Quote Pending Notice -->
+            <div *ngIf="hasQuotePendingItems()" class="quote-notice" data-testid="quote-notice">
+              <span class="notice-icon">&#9888;</span>
+              <div class="notice-content">
+                <h4>Price Quote Required</h4>
+                <p>Some items require a price quote for real gold/diamond. Our team will contact you with pricing after checkout.</p>
+              </div>
+            </div>
+
             <div 
               *ngFor="let item of cartItems; let i = index" 
               class="cart-item"
+              [class.quote-pending]="isQuotePending(item)"
               [attr.data-testid]="'cart-item-' + i">
               
               <div class="item-image">
@@ -40,7 +50,26 @@ import { AuthService } from '../../services/auth.service';
               <div class="item-details">
                 <h3 class="item-name" [attr.data-testid]="'item-name-' + i">{{ item.product.name }}</h3>
                 <p class="item-category">{{ item.product.category?.name }}</p>
-                <p class="item-price">\${{ item.product.price | number:'1.2-2' }}</p>
+                
+                <!-- Jewelry Type Badge -->
+                <div class="item-type" [class.real]="item.jewelryType === 'REAL'">
+                  <span *ngIf="item.jewelryType === 'IMITATION'" class="type-badge imitation">
+                    Imitation
+                  </span>
+                  <span *ngIf="item.jewelryType === 'REAL'" class="type-badge real">
+                    Real Gold/Diamond
+                  </span>
+                </div>
+
+                <p class="item-materials">
+                  {{ item.jewelryType === 'REAL' ? (item.product.realMetal || '18K Gold') : (item.product.metal || 'Alloy') }} |
+                  {{ item.jewelryType === 'REAL' ? (item.product.realGemstone || 'Natural Diamond') : (item.product.gemstone || 'Crystal') }}
+                </p>
+
+                <p class="item-price">
+                  <span *ngIf="!isQuotePending(item)">\${{ getItemPrice(item) | number:'1.2-2' }}</span>
+                  <span *ngIf="isQuotePending(item)" class="price-on-request">Price on Request</span>
+                </p>
               </div>
 
               <div class="item-quantity">
@@ -67,13 +96,14 @@ import { AuthService } from '../../services/auth.service';
               <div class="item-subtotal">
                 <label>Subtotal</label>
                 <p class="subtotal-amount" [attr.data-testid]="'subtotal-' + i">
-                  \${{ (item.product.price * item.quantity) | number:'1.2-2' }}
+                  <span *ngIf="!isQuotePending(item)">\${{ (getItemPrice(item) * item.quantity) | number:'1.2-2' }}</span>
+                  <span *ngIf="isQuotePending(item)" class="tbd">TBD</span>
                 </p>
               </div>
 
               <button 
                 class="btn-remove" 
-                (click)="removeItem(item.product.id!)"
+                (click)="removeItem(item)"
                 [attr.data-testid]="'remove-item-' + i">
                 &#10005;
               </button>
@@ -86,27 +116,37 @@ import { AuthService } from '../../services/auth.service';
               <h2>Order Summary</h2>
               
               <div class="summary-row">
-                <span>Subtotal ({{ getTotalItems() }} items)</span>
-                <span data-testid="cart-subtotal">\${{ getCartTotal() | number:'1.2-2' }}</span>
+                <span>Items ({{ getTotalItems() }})</span>
+                <span data-testid="cart-subtotal">
+                  <span *ngIf="!hasQuotePendingItems()">\${{ getCartTotal() | number:'1.2-2' }}</span>
+                  <span *ngIf="hasQuotePendingItems()" class="partial-total">
+                    \${{ getCartTotal() | number:'1.2-2' }} + Quote Items
+                  </span>
+                </span>
               </div>
               
               <div class="summary-row">
                 <span>Shipping</span>
-                <span data-testid="shipping-cost">{{ getCartTotal() >= 1000 ? 'Free' : '$50.00' }}</span>
+                <span data-testid="shipping-cost">
+                  {{ getCartTotal() >= 1000 || hasQuotePendingItems() ? 'Calculated at checkout' : '$50.00' }}
+                </span>
               </div>
               
               <div class="divider"></div>
               
               <div class="summary-row total">
-                <span>Total</span>
-                <span data-testid="cart-total">\${{ getFinalTotal() | number:'1.2-2' }}</span>
+                <span>Estimated Total</span>
+                <span data-testid="cart-total">
+                  <span *ngIf="!hasQuotePendingItems()">\${{ getFinalTotal() | number:'1.2-2' }}</span>
+                  <span *ngIf="hasQuotePendingItems()" class="includes-quote">Includes items requiring quote</span>
+                </span>
               </div>
 
               <button 
                 class="btn-primary btn-checkout"
                 (click)="proceedToCheckout()"
                 data-testid="checkout-btn">
-                Proceed to Checkout
+                {{ hasQuotePendingItems() ? 'Request Quote & Checkout' : 'Proceed to Checkout' }}
               </button>
 
               <button 
@@ -119,6 +159,11 @@ import { AuthService } from '../../services/auth.service';
               <p class="shipping-note">
                 Free shipping on orders over $1,000
               </p>
+
+              <div *ngIf="hasQuotePendingItems()" class="quote-info">
+                <h4>About Quote Items</h4>
+                <p>Items marked as "Real Gold/Diamond" without a listed price will be quoted by our team. We'll contact you within 24 hours with pricing.</p>
+              </div>
             </div>
           </div>
         </div>
@@ -169,6 +214,33 @@ import { AuthService } from '../../services/auth.service';
       margin-bottom: 32px;
     }
 
+    /* Quote Notice */
+    .quote-notice {
+      display: flex;
+      gap: 16px;
+      padding: 20px;
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      margin-bottom: 24px;
+    }
+
+    .notice-icon {
+      font-size: 1.5rem;
+      color: #F59E0B;
+    }
+
+    .notice-content h4 {
+      color: #F59E0B;
+      font-size: 1rem;
+      margin-bottom: 4px;
+    }
+
+    .notice-content p {
+      color: #A1A1AA;
+      font-size: 0.875rem;
+      line-height: 1.5;
+    }
+
     /* Cart Content */
     .cart-content {
       display: grid;
@@ -199,6 +271,11 @@ import { AuthService } from '../../services/auth.service';
       border-color: rgba(198, 168, 124, 0.4);
     }
 
+    .cart-item.quote-pending {
+      border-color: rgba(245, 158, 11, 0.3);
+      background: rgba(245, 158, 11, 0.02);
+    }
+
     .item-image {
       width: 120px;
       height: 150px;
@@ -224,9 +301,38 @@ import { AuthService } from '../../services/auth.service';
 
     .item-category {
       color: #A1A1AA;
-      font-size: 0.875rem;
+      font-size: 0.75rem;
       text-transform: uppercase;
       letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .item-type {
+      margin-bottom: 8px;
+    }
+
+    .type-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      font-size: 0.625rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+
+    .type-badge.imitation {
+      background: rgba(198, 168, 124, 0.2);
+      color: #C6A87C;
+    }
+
+    .type-badge.real {
+      background: rgba(16, 185, 129, 0.2);
+      color: #10B981;
+    }
+
+    .item-materials {
+      color: #71717A;
+      font-size: 0.8125rem;
       margin-bottom: 8px;
     }
 
@@ -234,6 +340,11 @@ import { AuthService } from '../../services/auth.service';
       color: #C6A87C;
       font-size: 1rem;
       font-weight: 500;
+    }
+
+    .price-on-request {
+      color: #F59E0B;
+      font-style: italic;
     }
 
     .item-quantity label,
@@ -293,6 +404,12 @@ import { AuthService } from '../../services/auth.service';
       font-weight: 600;
     }
 
+    .subtotal-amount .tbd {
+      color: #F59E0B;
+      font-style: italic;
+      font-weight: normal;
+    }
+
     .btn-remove {
       width: 36px;
       height: 36px;
@@ -335,6 +452,11 @@ import { AuthService } from '../../services/auth.service';
       font-size: 0.9375rem;
     }
 
+    .summary-row .partial-total {
+      font-size: 0.8125rem;
+      color: #F59E0B;
+    }
+
     .summary-row.total {
       font-size: 1.25rem;
       font-weight: 600;
@@ -343,6 +465,11 @@ import { AuthService } from '../../services/auth.service';
 
     .summary-row.total span:last-child {
       color: #C6A87C;
+    }
+
+    .summary-row .includes-quote {
+      font-size: 0.75rem;
+      color: #F59E0B;
     }
 
     .divider {
@@ -368,6 +495,25 @@ import { AuthService } from '../../services/auth.service';
       color: #A1A1AA;
       font-size: 0.75rem;
       margin-top: 16px;
+    }
+
+    .quote-info {
+      margin-top: 20px;
+      padding: 16px;
+      background: rgba(245, 158, 11, 0.05);
+      border: 1px solid rgba(245, 158, 11, 0.2);
+    }
+
+    .quote-info h4 {
+      color: #F59E0B;
+      font-size: 0.875rem;
+      margin-bottom: 8px;
+    }
+
+    .quote-info p {
+      color: #A1A1AA;
+      font-size: 0.75rem;
+      line-height: 1.5;
     }
 
     /* Responsive */
@@ -439,13 +585,25 @@ export class CartComponent implements OnInit, OnDestroy {
     return product.images?.[0] || 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400';
   }
 
+  getItemPrice(item: CartItem): number {
+    return this.cartService.getItemPrice(item);
+  }
+
+  isQuotePending(item: CartItem): boolean {
+    return item.jewelryType === 'REAL' && !item.product.realPrice;
+  }
+
+  hasQuotePendingItems(): boolean {
+    return this.cartService.hasQuotePendingItems();
+  }
+
   increaseQuantity(item: CartItem): void {
-    this.cartService.updateQuantity(item.product.id!, item.quantity + 1);
+    this.cartService.updateQuantity(item.product.id!, item.jewelryType, item.quantity + 1);
   }
 
   decreaseQuantity(item: CartItem): void {
     if (item.quantity > 1) {
-      this.cartService.updateQuantity(item.product.id!, item.quantity - 1);
+      this.cartService.updateQuantity(item.product.id!, item.jewelryType, item.quantity - 1);
     }
   }
 
@@ -453,12 +611,12 @@ export class CartComponent implements OnInit, OnDestroy {
     const input = event.target as HTMLInputElement;
     const quantity = parseInt(input.value, 10);
     if (quantity > 0) {
-      this.cartService.updateQuantity(item.product.id!, quantity);
+      this.cartService.updateQuantity(item.product.id!, item.jewelryType, quantity);
     }
   }
 
-  removeItem(productId: number): void {
-    this.cartService.removeFromCart(productId);
+  removeItem(item: CartItem): void {
+    this.cartService.removeFromCart(item.product.id!, item.jewelryType);
   }
 
   clearCart(): void {

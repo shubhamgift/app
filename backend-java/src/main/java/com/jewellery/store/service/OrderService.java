@@ -47,6 +47,7 @@ public class OrderService {
         
         List<OrderItem> orderItems = new ArrayList<>();
         BigDecimal totalAmount = BigDecimal.ZERO;
+        boolean hasPriceOnRequest = false;
         
         for (OrderRequest.OrderItemRequest itemRequest : request.getItems()) {
             Product product = productRepository.findById(itemRequest.getProductId())
@@ -56,14 +57,39 @@ public class OrderService {
             orderItem.setOrder(order);
             orderItem.setProduct(product);
             orderItem.setQuantity(itemRequest.getQuantity());
-            orderItem.setPrice(product.getPrice());
+            
+            String jewelryType = itemRequest.getJewelryType() != null ? itemRequest.getJewelryType() : "IMITATION";
+            orderItem.setJewelryType(jewelryType);
+            
+            // Determine price based on jewelry type
+            if ("REAL".equals(jewelryType)) {
+                if (product.getRealPrice() != null) {
+                    orderItem.setPrice(product.getRealPrice());
+                    orderItem.setPriceOnRequest(false);
+                    totalAmount = totalAmount.add(product.getRealPrice().multiply(BigDecimal.valueOf(itemRequest.getQuantity())));
+                } else {
+                    // Real jewelry without price - will be quoted later
+                    orderItem.setPrice(BigDecimal.ZERO);
+                    orderItem.setPriceOnRequest(true);
+                    hasPriceOnRequest = true;
+                }
+            } else {
+                // Imitation jewelry - use standard price
+                orderItem.setPrice(product.getPrice());
+                orderItem.setPriceOnRequest(false);
+                totalAmount = totalAmount.add(product.getPrice().multiply(BigDecimal.valueOf(itemRequest.getQuantity())));
+            }
             
             orderItems.add(orderItem);
-            totalAmount = totalAmount.add(product.getPrice().multiply(BigDecimal.valueOf(itemRequest.getQuantity())));
         }
         
         order.setItems(orderItems);
         order.setTotalAmount(totalAmount);
+        
+        // If order contains items requiring price quote, set special status
+        if (hasPriceOnRequest) {
+            order.setStatus("QUOTE_PENDING");
+        }
         
         return orderRepository.save(order);
     }

@@ -29,4 +29,12 @@ public class OrderItem {
     
     @Column(nullable = false)
     private BigDecimal price;
+    
+    // Type of jewellery ordered: "IMITATION" or "REAL"
+    @Column(nullable = false)
+    private String jewelryType = "IMITATION";
+    
+    // For real jewellery orders without price, this will be true
+    @Column(nullable = false)
+    private Boolean priceOnRequest = false;
 }

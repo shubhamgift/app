@@ -1,5 +1,5 @@
 import { User } from './user.model';
-import { Product } from './product.model';
+import { Product, JewelryType } from './product.model';
 
 export interface Order {
   id?: number;
@@ -18,12 +18,15 @@ export interface OrderItem {
   product: Product;
   quantity: number;
   price: number;
+  jewelryType: JewelryType;
+  priceOnRequest?: boolean;
 }
 
 export interface OrderRequest {
   items: {
     productId: number;
     quantity: number;
+    jewelryType: JewelryType;
   }[];
   shippingAddress: string;
   phone: string;
